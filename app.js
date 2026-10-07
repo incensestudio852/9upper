@@ -1,5 +1,34 @@
-// 題庫資料結構：含有 1 個正確提示（realHint）、2 個假幹擾提示（fakeHints）、詞彙與簡介
-// 提示詞設計原則：使用空泛大範圍（如「天文學」「動物」），讓 9upper 有更大發揮空間
+// ============================================================
+// 【出題原則】（重要！新增題目時請務必遵循）
+// ------------------------------------------------------------
+// 1. 題目應「冷門」且「與字面理解不同」，讓玩家有更大發揮空間。
+//
+//    反例（不應採用）：
+//      - 「斑馬條紋」：字面已直接表達內容，玩家按字面即可理解。
+//      - 「太平洋折翅蜚蠊」：名稱過於直白，容易直接猜到內容。
+//      - 「死人頭蛾」：字面已說明是蛾類，指向過於明確。
+//      - 「內射對象」「露點」：字面容易想歪，涉及黃色暗示，應避免。
+//      - 「首音互換」「Dord」「曼德拉效應」：指向較直接或已在網路過度流傳。
+//
+//    正例（應採用）：
+//      - 「奧卡姆剃刀」：字面像工具，實則為哲學原則。
+//      - 「契訶夫之槍」：字面像武器，實則為文學理論。
+//      - 「帕斯卡賭注」：字面像賭博，實則為宗教哲學論證。
+//      - 「打生樁」：字面費解，實則為民俗。
+//      - 「奧伯斯佯謬」：字面像人名，實則為天文學佯謬。
+//      - 「麥高芬」：字面像人名，實則為電影敘事術語。
+//      - 「中文房間」：字面像建築，實則為心靈哲學思想實驗。
+//
+// 2. 提示詞應為「空泛大範圍」（如「天文學」「動物」「民俗」），
+//    避免過於具體（如「古老桌遊」「宇宙文明等級」），
+//    否則難度二的假提示會太容易被識破。
+//
+// 3. 每題需有 1 個 realHint（真提示）與 2 個 fakeHints（假幹擾提示），
+//    以及一段可靠來源的 desc（真實簡介）。
+//
+// 4. 避免任何字面容易聯想到色情、暴力或噁心的詞彙。
+// ============================================================
+
 const quizBank = [
   {
     word: "烏爾帝國王棋",
@@ -146,6 +175,44 @@ const quizBank = [
     fakeHints: ["外星遺跡", "真菌病害"],
     desc: "納米比亞草原上數千個直徑2至12米的圓形裸地，周圍草長得較高，成因至今仍有爭議，有白蟻活動、植物水分競爭等假說。"
   },
+  // ===== 替換「斑馬條紋」的新增題目 =====
+  {
+    word: "奧帕茨",
+    realHint: "考古",
+    fakeHints: ["地理", "生物"],
+    desc: "英文「OOPArt」（Out of Place Artifact）的音譯，指出現在考古或古生物記錄中、與所在地層時代不相符合的出土物，例如被誤讀為「法老直升機」的埃及聖書體雕刻。"
+  },
+  // ===== 替換「首音互換」「Dord」「曼德拉效應」的新題目 =====
+  {
+    word: "奧伯斯佯謬",
+    realHint: "天文學",
+    fakeHints: ["數學", "光學"],
+    desc: "1823年由德國天文學家奧伯斯提出的佯謬：如果宇宙是無限、均勻且永恆的，夜空應該被無數恆星的光照亮，但實際上夜空是黑暗的。此矛盾後來以宇宙膨脹與有限年齡來解釋。"
+  },
+  {
+    word: "麥高芬",
+    realHint: "電影",
+    fakeHints: ["文學", "軍事"],
+    desc: "由導演希區考克推廣的電影敘事術語，指故事中推動情節發展、但本身內容並不重要的元素，例如間諜片中的機密文件或寶物，角色們爭相追逐，觀眾卻不需知道它到底是什麼。"
+  },
+  {
+    word: "中文房間",
+    realHint: "哲學思想",
+    fakeHints: ["建築", "語言學"],
+    desc: "1980年哲學家約翰·瑟爾提出的思想實驗，用以反駁強人工智慧：一個不懂中文的人被關在房間裡，依照規則手冊回應中文紙條，外界卻以為他懂中文。瑟爾主張這說明「符號操作」並不等於真正的理解。"
+  },
+  {
+    word: "球形奶牛",
+    realHint: "科學哲學",
+    fakeHints: ["農業", "物理實驗"],
+    desc: "一個幽默比喻，形容科學研究中為簡化複雜現象而建立的過度簡化模型。源於一則笑話：理論物理學家對牧場主人說「我有解決方案了，不過前提是在真空狀態且奶牛為球體的時候才有效」。"
+  },
+  {
+    word: "忒修斯之船",
+    realHint: "哲學思想",
+    fakeHints: ["航海歷史", "文學隱喻"],
+    desc: "古希臘哲學家普魯塔克提出的同一性悖論：如果忒修斯船上的木頭被逐漸替換，直到所有木頭都不是原來的，那這艘船還是原來的那艘嗎？若用舊木頭重新組裝，哪一艘才是真正的忒修斯之船？"
+  }
 ];
 
 
@@ -175,23 +242,23 @@ function showScreen(screenName) {
 // 顯示題庫題數
 document.getElementById("question-count").innerText = quizBank.length;
 
-// 步驟 1 -> 步驟 2: 設定人數、難度並抽取題目與生成提示
-document.getElementById("start-btn").addEventListener("click", () => {
-  const countInput = document.getElementById("player-count");
-  const diffInput = document.getElementById("difficulty-select");
+// ============================================================
+// 抽題與渲染（抽題邏輯集中在此，方便「換一題」重用）
+// ============================================================
 
-  playerCount = parseInt(countInput.value);
-  selectedDifficulty = parseInt(diffInput.value);
+// 抽一道新題目（避免與當前題目重複），並更新公開題目畫面
+function drawNewTopic() {
+  let newTopic;
+  do {
+    newTopic = quizBank[Math.floor(Math.random() * quizBank.length)];
+  } while (quizBank.length > 1 && currentTopic && newTopic === currentTopic);
 
-  if (isNaN(playerCount) || playerCount < 3 || playerCount > 10) {
-    alert("請輸入 3 至 10 之間的玩家人數！");
-    return;
-  }
+  currentTopic = newTopic;
+  renderPublicTopic();
+}
 
-  // 隨機選題
-  currentTopic = quizBank[Math.floor(Math.random() * quizBank.length)];
-
-  // 根據難度生成提示標籤
+// 依當前難度渲染公開題目與提示標籤
+function renderPublicTopic() {
   const hintsContainer = document.getElementById("public-hints");
   hintsContainer.innerHTML = "";
 
@@ -209,7 +276,6 @@ document.getElementById("start-btn").addEventListener("click", () => {
     displayedHints = [];
   }
 
-  // 渲染提示
   if (displayedHints.length > 0) {
     displayedHints.forEach(hint => {
       const span = document.createElement("span");
@@ -222,6 +288,24 @@ document.getElementById("start-btn").addEventListener("click", () => {
   }
 
   document.getElementById("public-word").innerText = currentTopic.word;
+}
+
+// 步驟 1 -> 步驟 2: 設定人數、難度並抽取題目與生成提示
+document.getElementById("start-btn").addEventListener("click", () => {
+  const countInput = document.getElementById("player-count");
+  const diffInput = document.getElementById("difficulty-select");
+
+  playerCount = parseInt(countInput.value);
+  selectedDifficulty = parseInt(diffInput.value);
+
+  if (isNaN(playerCount) || playerCount < 3 || playerCount > 10) {
+    alert("請輸入 3 至 10 之間的玩家人數！");
+    return;
+  }
+
+  // 抽題並渲染（currentTopic 先清空，確保不會被當成「重複」而卡住）
+  currentTopic = null;
+  drawNewTopic();
 
   // 生成身分列表 (1 個答題者, 1 個真話者, 其餘為 9upper)
   roles = Array(playerCount).fill("liar");
@@ -232,6 +316,11 @@ document.getElementById("start-btn").addEventListener("click", () => {
   roles.sort(() => Math.random() - 0.5);
 
   showScreen("publicTopic");
+});
+
+// 「換一題」按鈕（僅在本畫面可用；一旦進入傳遞裝置畫面即無法再換）
+document.getElementById("reroll-btn").addEventListener("click", () => {
+  drawNewTopic();
 });
 
 // 步驟 2 -> 步驟 3: 開始傳遞裝置
