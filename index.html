@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>9upper 吹水王 - Party Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🗣️ 9upper 吹水王</h1>
+
+    <!-- 步驟 1: 設定人數與難度 -->
+    <section id="setup-screen" class="card active">
+      <h2>設定遊戲</h2>
+      
+      <div class="form-group">
+        <label for="player-count">玩家人數 (3 - 10 人):</label>
+        <input type="number" id="player-count" min="3" max="10" value="4">
+      </div>
+
+      <div class="form-group">
+        <label for="difficulty-select">選擇題目難度:</label>
+        <select id="difficulty-select" class="select-input">
+          <option value="1">難度一：明確提示 (1個真提示)</option>
+          <option value="2">難度二：障眼法 (1個真提示 + 2個假提示)</option>
+          <option value="3">難度三：終極考驗 (完全無提示)</option>
+        </select>
+      </div>
+
+      <button id="start-btn" class="btn primary">生成題目與角色</button>
+    </section>
+
+    <!-- 步驟 2: 公佈題面與提示（所有人觀看） -->
+    <section id="public-topic-screen" class="card">
+      <h2>📢 本局題目公佈</h2>
+      <p class="sub-text">請所有人共同觀看題目與提示：</p>
+      
+      <div class="public-topic-box">
+        <p class="label">題目詞彙</p>
+        <h3 id="public-word">---</h3>
+        
+        <p class="label" style="margin-top: 12px;">分類 / 關聯提示</p>
+        <div id="public-hints" class="hints-tags">
+          <!-- 提示標籤會動態生成於此 -->
+        </div>
+      </div>
+
+      <p class="info-text">記下題目了嗎？準備好後開始傳遞手機！</p>
+      <button id="start-pass-btn" class="btn primary">開始傳遞裝置</button>
+    </section>
+
+    <!-- 步驟 3: 傳遞裝置提示 -->
+    <section id="pass-screen" class="card">
+      <h2 id="player-turn-title">請交給 玩家 1</h2>
+      <p class="warning-text">⚠️ 提示：請確保其他玩家看不到螢幕！</p>
+      <button id="reveal-btn" class="btn warning">查看我的身分與細節</button>
+    </section>
+
+    <!-- 步驟 4: 查看身分與題目細節 -->
+    <section id="role-screen" class="card">
+      <h2 id="role-title">你的身分：???</h2>
+      
+      <div id="role-desc" class="role-box"></div>
+
+      <div class="topic-box">
+        <p class="label">題目詞彙：</p>
+        <h3 id="topic-word">---</h3>
+        
+        <div id="explanation-container">
+          <p class="label">真實簡介（僅真話者可見）：</p>
+          <p id="topic-desc" class="desc-text">---</p>
+        </div>
+      </div>
+
+      <button id="next-player-btn" class="btn primary">看完並隱藏（交給下一位）</button>
+    </section>
+
+    <!-- 步驟 5: 集體討論 -->
+    <section id="discussion-screen" class="card">
+      <h2>🎉 所有人已完成查看！</h2>
+      <p>請依序向<b>「答題者」</b>解釋詞彙的意思。</p>
+      
+      <div class="info-box">
+        <p><b>9upper 們：</b>憑空發揮，一本正經地胡說八道！</p>
+        <p><b>真話者：</b>順暢講出真實意思，贏得信任！</p>
+        <p><b>答題者：</b>仔細聆聽並提出質疑，找出真話者！</p>
+      </div>
+
+      <button id="show-answer-btn" class="btn success">揭曉答案與身分</button>
+    </section>
+
+    <!-- 步驟 6: 揭曉答案 -->
+    <section id="reveal-all-screen" class="card">
+      <h2>🔍 正確答案揭曉</h2>
+      
+      <div class="answer-box">
+        <h3 id="final-word">---</h3>
+        <p id="final-desc">---</p>
+      </div>
+
+      <div class="roles-summary">
+        <p>🎯 <b>答題者：</b><span id="final-guesser">---</span></p>
+        <p>😇 <b>真話者：</b><span id="final-truth-teller">---</span></p>
+      </div>
+
+      <button id="restart-btn" class="btn primary">下一局</button>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
