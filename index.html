@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>9upper 吹水王 - Party Game</title>
+  <title>吹水王 - Party Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>🗣️ 9upper 吹水王</h1>
+    <div class="header-bar">
+      <h1>🗣️ 吹水王</h1>
+      <button id="demo-btn" class="btn-demo">💡 遊戲示例</button>
+    </div>
 
     <!-- 步驟 1: 設定人數與難度 -->
     <section id="setup-screen" class="card active">
@@ -71,13 +74,20 @@
         <h3 id="topic-word">---</h3>
         
         <div id="explanation-container">
-          <p class="label">真實簡介（僅真話者可見）：</p>
+          <p class="label">真實簡介（僅老實人可見）：</p>
           <p id="topic-desc" class="desc-text">---</p>
         </div>
 
         <div id="liar-hints-container" style="display: none; margin-top: 12px;">
           <p class="label">參考提示：</p>
           <div id="liar-hints" class="hints-tags"></div>
+          
+          <div class="liar-guide-box">
+            <p class="label" style="color: #2b6cb0;">吹水小貼士（請詳細閱讀以模擬老實人讀題時間）：</p>
+            <p class="guide-text">
+              發揮想像力！發言時保持自信且眼神堅定，適當加入生活情境或科學專業術語來增加可信度。切記不要猶豫太久，順著參考提示開頭，說得越自然越像真話！
+            </p>
+          </div>
         </div>
       </div>
 
@@ -90,9 +100,9 @@
       <p>請依序向<b>「答題者」</b>解釋詞彙的意思。</p>
       
       <div class="info-box">
-        <p><b>9upper 們：</b>憑空發揮，一本正經地胡說八道！</p>
-        <p><b>真話者：</b>順暢講出真實意思，贏得信任！</p>
-        <p><b>答題者：</b>仔細聆聽並提出質疑，找出真話者！</p>
+        <p><b>吹水王們：</b>憑空發揮，一本正經地胡說八道！</p>
+        <p><b>老實人：</b>順暢講出真實意思，贏得信任！</p>
+        <p><b>答題者：</b>仔細聆聽並提出質疑，找出老實人！</p>
       </div>
 
       <button id="show-answer-btn" class="btn success">揭曉答案與身分</button>
@@ -109,7 +119,7 @@
 
       <div class="roles-summary">
         <p>🎯 <b>答題者：</b><span id="final-guesser">---</span></p>
-        <p>😇 <b>真話者：</b><span id="final-truth-teller">---</span></p>
+        <p>😇 <b>老實人：</b><span id="final-truth-teller">---</span></p>
       </div>
 
       <button id="restart-btn" class="btn primary">下一局</button>
