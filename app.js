@@ -402,4 +402,252 @@ const quizBank = [
     word: "食鐵獸",
     realHint: "動物",
     fakeHints: ["神話", "冶鐵"],
-    desc: "中國古代文獻中對大熊貓的俗稱，相傳因其咬合力強大，偶爾會進村
+    desc: "中國古代文獻中對大熊貓的俗稱，相傳因其咬合力強大，偶爾會進村舔舐或啃咬鐵鍋而得名。"
+  },
+  {
+    word: "法拉第籠",
+    realHint: "物理學",
+    fakeHints: ["捕魚", "心理諮商"],
+    desc: "由金屬導體構成的封閉籠狀結構，能有效阻隔外部電場與電磁波干擾，使籠內部不受電擊或電磁輻射影響。"
+  },
+  {
+    word: "空椅技巧",
+    realHint: "心理學",
+    fakeHints: ["魔術", "禮儀"],
+    desc: "完形心理治療中的一種技巧，讓來訪者對著面前的空椅子進行對話，以角色扮演方式抒發內心衝突或未完成的心結。"
+  },
+  {
+    word: "四物農樂",
+    realHint: "表演藝術",
+    fakeHints: ["農業", "宗教"],
+    desc: "韓國傳統農樂表演形式，以鑼、鼓、長鼓、小鼓四種打擊樂器組成，原為農忙時期的集體勞動音樂，後發展為獨立的舞台表演藝術，是韓國重要的無形文化遺產。"
+  },
+  {
+    word: "盤索里",
+    realHint: "表演藝術",
+    fakeHints: ["樂器", "飲食"],
+    desc: "韓國傳統說唱藝術，由一名歌者與一名鼓手組成，歌者以說唱方式演繹長篇故事，內容多為民間傳說與歷史題材。2003年列入聯合國教科文組織人類非物質文化遺產名錄。"
+  },
+  {
+    word: "韓山苧麻織",
+    realHint: "傳統工藝",
+    fakeHints: ["農業", "建築"],
+    desc: "韓國忠清南道韓山地區傳承的苧麻織造技藝，以當地種植的苧麻為原料，經多道手工工序織成夏季衣料。2011年列入聯合國教科文組織人類非物質文化遺產名錄。"
+  },
+  {
+    word: "處容舞",
+    realHint: "表演藝術",
+    fakeHints: ["宗教", "軍事"],
+    desc: "韓國傳統宮廷舞蹈，源自新羅時期處容郎驅疫辟邪的傳說。舞者戴面具、穿彩衣，動作緩慢莊重，原為宮廷宴會與驅邪儀式所用，現為韓國重要無形文化財。"
+  }
+];
+
+
+// 遊戲狀態變數
+let playerCount = 4;
+let selectedDifficulty = 1;
+let currentTurnIndex = 0;
+let roles = []; // 'guesser', 'truth', 'liar'
+let currentTopic = null;
+let currentPublicHints = [];
+
+// DOM 元素
+const screens = {
+  setup: document.getElementById("setup-screen"),
+  publicTopic: document.getElementById("public-topic-screen"),
+  pass: document.getElementById("pass-screen"),
+  role: document.getElementById("role-screen"),
+  discussion: document.getElementById("discussion-screen"),
+  revealAll: document.getElementById("reveal-all-screen")
+};
+
+// 切換畫面
+function showScreen(screenName) {
+  Object.values(screens).forEach(s => s.classList.remove("active"));
+  screens[screenName].classList.add("active");
+}
+
+// 顯示題庫題數
+document.getElementById("question-count").innerText = quizBank.length;
+
+// ============================================================
+// 抽題與渲染
+// ============================================================
+
+function drawNewTopic() {
+  let newTopic;
+  do {
+    newTopic = quizBank[Math.floor(Math.random() * quizBank.length)];
+  } while (quizBank.length > 1 && currentTopic && newTopic === currentTopic);
+
+  currentTopic = newTopic;
+  renderPublicTopic();
+}
+
+function renderPublicTopic() {
+  const hintsContainer = document.getElementById("public-hints");
+  hintsContainer.innerHTML = "";
+
+  if (selectedDifficulty === 1) {
+    currentPublicHints = [currentTopic.realHint];
+  } else if (selectedDifficulty === 2) {
+    currentPublicHints = [currentTopic.realHint, ...currentTopic.fakeHints];
+    currentPublicHints.sort(() => Math.random() - 0.5);
+  } else {
+    currentPublicHints = [];
+  }
+
+  if (currentPublicHints.length > 0) {
+    currentPublicHints.forEach(hint => {
+      const span = document.createElement("span");
+      span.className = "tag";
+      span.innerText = hint;
+      hintsContainer.appendChild(span);
+    });
+  } else {
+    hintsContainer.innerHTML = `<span class="no-hint">（本局為難度三：無任何提示）</span>`;
+  }
+
+  document.getElementById("public-word").innerText = currentTopic.word;
+}
+
+// 步驟 1 -> 步驟 2: 設定人數、難度並抽取題目與生成提示
+document.getElementById("start-btn").addEventListener("click", () => {
+  const countInput = document.getElementById("player-count");
+  const diffInput = document.getElementById("difficulty-select");
+
+  playerCount = parseInt(countInput.value);
+  selectedDifficulty = parseInt(diffInput.value);
+
+  if (isNaN(playerCount) || playerCount < 3 || playerCount > 10) {
+    alert("請輸入 3 至 10 之間的玩家人數！");
+    return;
+  }
+
+  currentTopic = null;
+  drawNewTopic();
+
+  roles = Array(playerCount).fill("liar");
+  roles[0] = "guesser";
+  roles[1] = "truth";
+  roles.sort(() => Math.random() - 0.5);
+
+  showScreen("publicTopic");
+});
+
+// 點擊「💡 遊戲示例」按鈕，載入「蝴蝶效應」示範教學
+document.getElementById("demo-btn").addEventListener("click", () => {
+  playerCount = 4;
+  selectedDifficulty = 1;
+
+  currentTopic = {
+    word: "蝴蝶效應",
+    realHint: "氣象學 / 混沌理論",
+    fakeHints: ["昆蟲生態", "心理學現象"],
+    desc: "混沌理論中的概念，指在一個動態系統中，初始條件的微小變化，能帶動整個系統長期且巨大的連鎖反應。"
+  };
+
+  currentPublicHints = [currentTopic.realHint];
+  renderPublicTopic();
+
+  // 固定角色設定：玩家1為答題者，玩家2為老實人，玩家3/4為吹水王
+  roles = ["guesser", "truth", "liar", "liar"];
+
+  showScreen("publicTopic");
+});
+
+// 返回設定頁按鈕事件
+document.getElementById("back-to-setup-btn").addEventListener("click", () => {
+  showScreen("setup");
+});
+
+// 「換一題」按鈕
+document.getElementById("reroll-btn").addEventListener("click", () => {
+  drawNewTopic();
+});
+
+// 步驟 2 -> 步驟 3: 開始傳遞裝置
+document.getElementById("start-pass-btn").addEventListener("click", () => {
+  currentTurnIndex = 0;
+  prepareTurnScreen();
+});
+
+function prepareTurnScreen() {
+  document.getElementById("player-turn-title").innerText = `請交給 玩家 ${currentTurnIndex + 1}`;
+  showScreen("pass");
+}
+
+// 揭曉目前玩家身分與詳細內容
+document.getElementById("reveal-btn").addEventListener("click", () => {
+  const role = roles[currentTurnIndex];
+  const roleNameElem = document.getElementById("role-name");
+  const roleDesc = document.getElementById("role-desc");
+  const wordElem = document.getElementById("topic-word");
+  const descContainer = document.getElementById("explanation-container");
+  const descElem = document.getElementById("topic-desc");
+  const liarHintsContainer = document.getElementById("liar-hints-container");
+  const liarHintsElem = document.getElementById("liar-hints");
+
+  wordElem.innerText = currentTopic.word;
+
+  if (role === "guesser") {
+    roleNameElem.innerText = "🎯 答題者";
+    roleDesc.innerText = "你本局不需要說話與編造，只需聆聽其他人的解釋並找出誰在講真話！";
+    descContainer.style.display = "none";
+    liarHintsContainer.style.display = "none";
+  } else if (role === "truth") {
+    roleNameElem.innerText = "😇 老實人";
+    roleDesc.innerText = "請根據下方真實簡介向答題者解釋，努力贏得信任！";
+    descContainer.style.display = "block";
+    descElem.innerText = currentTopic.desc;
+    liarHintsContainer.style.display = "none";
+  } else { // liar
+    roleNameElem.innerText = "🗣️ 吹水王";
+    roleDesc.innerText = "你只知道題目詞彙與公開的提示！請發揮想像力，編造一個聽起來極為合理的假解釋！";
+    descContainer.style.display = "none";
+    liarHintsContainer.style.display = "block";
+    liarHintsElem.innerHTML = "";
+
+    if (selectedDifficulty === 3) {
+      liarHintsElem.innerHTML = `<span class="no-hint" style="font-size: 18px; font-weight: bold; color: #e53e3e;">祝你好運！</span>`;
+    } else {
+      currentPublicHints.forEach(hint => {
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.innerText = hint;
+        liarHintsElem.appendChild(span);
+      });
+    }
+  }
+
+  showScreen("role");
+});
+
+// 切換至下一個人或進入討論階段
+document.getElementById("next-player-btn").addEventListener("click", () => {
+  currentTurnIndex++;
+  if (currentTurnIndex < playerCount) {
+    prepareTurnScreen();
+  } else {
+    showScreen("discussion");
+  }
+});
+
+// 最終揭曉答案
+document.getElementById("show-answer-btn").addEventListener("click", () => {
+  document.getElementById("final-word").innerText = currentTopic.word;
+  document.getElementById("final-desc").innerText = currentTopic.desc;
+
+  const guesserIndex = roles.indexOf("guesser") + 1;
+  const truthIndex = roles.indexOf("truth") + 1;
+
+  document.getElementById("final-guesser").innerText = `玩家 ${guesserIndex}`;
+  document.getElementById("final-truth-teller").innerText = `玩家 ${truthIndex}`;
+
+  showScreen("revealAll");
+});
+
+// 重新開始
+document.getElementById("restart-btn").addEventListener("click", () => {
+  showScreen("setup");
+});
