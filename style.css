@@ -20,9 +20,33 @@ body {
   text-align: center;
 }
 
-h1 {
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.header-bar h1 {
+  margin-bottom: 0;
+  font-size: 24px;
   color: #1a202c;
+}
+
+.btn-demo {
+  background-color: #edf2f7;
+  color: #2b6cb0;
+  border: 1px solid #cbd5e0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-demo:hover {
+  background-color: #e2e8f0;
 }
 
 .card {
@@ -192,6 +216,23 @@ input[type="number"] {
   font-size: 18px;
   line-height: 1.6;
   color: #2d3748;
+}
+
+/* 吹水王提示專用框 */
+.liar-guide-box {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed #cbd5e0;
+}
+
+.guide-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4a5568;
+  background-color: #ebf8ff;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 6px;
 }
 
 .info-box, .answer-box {
