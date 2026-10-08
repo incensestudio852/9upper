@@ -48,6 +48,7 @@
       </div>
 
       <p class="info-text">記下題目了嗎？準備好後開始傳遞手機！</p>
+      <button id="back-to-setup-btn" class="btn warning">⚙️ 返回設定頁</button>
       <button id="reroll-btn" class="btn secondary">🔄 換一題</button>
       <button id="start-pass-btn" class="btn primary">開始傳遞裝置</button>
     </section>
@@ -61,7 +62,7 @@
 
     <!-- 步驟 4: 查看身分與題目細節 -->
     <section id="role-screen" class="card">
-      <h2 id="role-title">你的身分：???</h2>
+      <h2 id="role-title">你的身分：<span id="role-name">???</span></h2>
       
       <div id="role-desc" class="role-box"></div>
 
@@ -72,6 +73,11 @@
         <div id="explanation-container">
           <p class="label">真實簡介（僅真話者可見）：</p>
           <p id="topic-desc" class="desc-text">---</p>
+        </div>
+
+        <div id="liar-hints-container" style="display: none; margin-top: 12px;">
+          <p class="label">參考提示：</p>
+          <div id="liar-hints" class="hints-tags"></div>
         </div>
       </div>
 

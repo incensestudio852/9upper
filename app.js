@@ -2,31 +2,8 @@
 // 【出題原則】（重要！新增題目時務必遵循）
 // ------------------------------------------------------------
 // 1. 題目應「冷門」且「字意反差」與「與字面理解不同」，讓玩家有更大發揮空間。
-//
-//    反例（不應採用）：
-//      - 「斑馬條紋」：字面已直接表達內容，玩家按字面即可理解。
-//      - 「太平洋折翅蜚蠊」：名稱過於直白，容易直接猜到內容。
-//      - 「死人頭蛾」：字面已說明是蛾類，指向過於明確。
-//      - 「內射對象」「露點」：字面容易想歪，涉及黃色暗示，應避免。
-//      - 「首音互換」「Dord」「曼德拉效應」：指向較直接或已在網路過度流傳。
-//
-//    正例（應採用）：
-//      - 「奧卡姆剃刀」：字面像工具，實則為哲學原則。
-//      - 「契訶夫之槍」：字面像武器，實則為文學理論。
-//      - 「帕斯卡賭注」：字面像賭博，實則為宗教哲學論證。
-//      - 「打生樁」：字面費解，實則為民俗。
-//      - 「題目立」：字面像教育術語，實則為口述戲劇表演。
-//      - 「劈懶神」：字面像恐怖懲罰，實則為勸勤祈福民俗。
-//      - 「恐怖谷」：字面像地理景觀，實則為心理學現象。
-//      - 「紅皇后假說」：字面像人物傳說，實則為生物學假說。
-//
-// 2. 提示詞應為「空泛大範圍」（如「天文學」「動物」「民俗」），
-//    避免過於具體（如「古老桌遊」「宇宙文明等級」），
-//    否則難度二的假提示會太容易被識破。
-//
-// 3. 每題需有 1 個 realHint（真提示）與 2 個 fakeHints（假幹擾提示），
-//    以及一段可靠來源的 desc（真實簡介）。簡介力求精簡，以短句寫成，方便閱讀，需在 100 字內。
-//
+// 2. 提示詞應為「空泛大範圍」。
+// 3. 每題需有 1 個 realHint（真提示）與 2 個 fakeHints（假幹擾提示），以及一段 desc（真實簡介）。
 // 4. 避免字面容易聯想到色情或噁心的詞彙。
 // ============================================================
 
@@ -472,6 +449,7 @@ let selectedDifficulty = 1;
 let currentTurnIndex = 0;
 let roles = []; // 'guesser', 'truth', 'liar'
 let currentTopic = null;
+let currentPublicHints = []; // 紀錄本局公佈的提示內容
 
 // DOM 元素
 const screens = {
@@ -493,10 +471,9 @@ function showScreen(screenName) {
 document.getElementById("question-count").innerText = quizBank.length;
 
 // ============================================================
-// 抽題與渲染（抽題邏輯集中在此，方便「換一題」重用）
+// 抽題與渲染
 // ============================================================
 
-// 抽一道新題目（避免與當前題目重複），並更新公開題目畫面
 function drawNewTopic() {
   let newTopic;
   do {
@@ -507,27 +484,21 @@ function drawNewTopic() {
   renderPublicTopic();
 }
 
-// 依當前難度渲染公開題目與提示標籤
 function renderPublicTopic() {
   const hintsContainer = document.getElementById("public-hints");
   hintsContainer.innerHTML = "";
 
-  let displayedHints = [];
-
   if (selectedDifficulty === 1) {
-    // 難度一：1 個真提示
-    displayedHints = [currentTopic.realHint];
+    currentPublicHints = [currentTopic.realHint];
   } else if (selectedDifficulty === 2) {
-    // 難度二：1 個真提示 + 2 個假提示（隨機打亂）
-    displayedHints = [currentTopic.realHint, ...currentTopic.fakeHints];
-    displayedHints.sort(() => Math.random() - 0.5);
+    currentPublicHints = [currentTopic.realHint, ...currentTopic.fakeHints];
+    currentPublicHints.sort(() => Math.random() - 0.5);
   } else {
-    // 難度三：完全無提示
-    displayedHints = [];
+    currentPublicHints = [];
   }
 
-  if (displayedHints.length > 0) {
-    displayedHints.forEach(hint => {
+  if (currentPublicHints.length > 0) {
+    currentPublicHints.forEach(hint => {
       const span = document.createElement("span");
       span.className = "tag";
       span.innerText = hint;
@@ -553,22 +524,23 @@ document.getElementById("start-btn").addEventListener("click", () => {
     return;
   }
 
-  // 抽題並渲染（currentTopic 先清空，確保不會被當成「重複」而卡住）
   currentTopic = null;
   drawNewTopic();
 
-  // 生成身分列表 (1 個答題者, 1 個真話者, 其餘為 9upper)
   roles = Array(playerCount).fill("liar");
   roles[0] = "guesser";
   roles[1] = "truth";
-
-  // 洗牌身份
   roles.sort(() => Math.random() - 0.5);
 
   showScreen("publicTopic");
 });
 
-// 「換一題」按鈕（僅在本畫面可用；一旦進入傳遞裝置畫面即無法再換）
+// 返回設定頁按鈕事件
+document.getElementById("back-to-setup-btn").addEventListener("click", () => {
+  showScreen("setup");
+});
+
+// 「換一題」按鈕
 document.getElementById("reroll-btn").addEventListener("click", () => {
   drawNewTopic();
 });
@@ -579,7 +551,6 @@ document.getElementById("start-pass-btn").addEventListener("click", () => {
   prepareTurnScreen();
 });
 
-// 準備下一位玩家畫面
 function prepareTurnScreen() {
   document.getElementById("player-turn-title").innerText = `請交給 玩家 ${currentTurnIndex + 1}`;
   showScreen("pass");
@@ -588,27 +559,44 @@ function prepareTurnScreen() {
 // 揭曉目前玩家身分與詳細內容
 document.getElementById("reveal-btn").addEventListener("click", () => {
   const role = roles[currentTurnIndex];
-  const roleTitle = document.getElementById("role-title");
+  const roleNameElem = document.getElementById("role-name");
   const roleDesc = document.getElementById("role-desc");
   const wordElem = document.getElementById("topic-word");
   const descContainer = document.getElementById("explanation-container");
   const descElem = document.getElementById("topic-desc");
+  const liarHintsContainer = document.getElementById("liar-hints-container");
+  const liarHintsElem = document.getElementById("liar-hints");
 
   wordElem.innerText = currentTopic.word;
 
   if (role === "guesser") {
-    roleTitle.innerText = "你的身分：🎯 答題者";
+    roleNameElem.innerText = "🎯 答題者";
     roleDesc.innerText = "你本局不需要說話與編造，只需聆聽其他人的解釋並找出誰在講真話！";
     descContainer.style.display = "none";
+    liarHintsContainer.style.display = "none";
   } else if (role === "truth") {
-    roleTitle.innerText = "你的身分：😇 真話者";
+    roleNameElem.innerText = "😇 真話者";
     roleDesc.innerText = "請根據下方真實簡介向答題者解釋，努力贏得信任！";
     descContainer.style.display = "block";
     descElem.innerText = currentTopic.desc;
+    liarHintsContainer.style.display = "none";
   } else { // liar
-    roleTitle.innerText = "你的身分：🗣️ 9upper (吹水王)";
+    roleNameElem.innerText = "🗣️ 9upper (吹水王)";
     roleDesc.innerText = "你只知道題目詞彙與公開的提示！請發揮想像力，編造一個聽起來極為合理的假解釋！";
     descContainer.style.display = "none";
+    liarHintsContainer.style.display = "block";
+    liarHintsElem.innerHTML = "";
+
+    if (selectedDifficulty === 3) {
+      liarHintsElem.innerHTML = `<span class="no-hint" style="font-size: 18px; font-weight: bold; color: #e53e3e;">祝你好運！</span>`;
+    } else {
+      currentPublicHints.forEach(hint => {
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.innerText = hint;
+        liarHintsElem.appendChild(span);
+      });
+    }
   }
 
   showScreen("role");
