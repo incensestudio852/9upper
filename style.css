@@ -218,6 +218,18 @@ input[type="number"] {
   color: #2d3748;
 }
 
+/* 討論頁面提示文字樣式 */
+.discussion-instruction {
+  font-size: 16px;
+  color: #2d3748;
+  margin: 14px 0;
+  line-height: 1.5;
+  background-color: #fffaf0;
+  border: 1px solid #feebc8;
+  padding: 10px;
+  border-radius: 8px;
+}
+
 /* 吹水王提示專用框 */
 .liar-guide-box {
   margin-top: 16px;
