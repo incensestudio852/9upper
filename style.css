@@ -261,3 +261,54 @@ input[type="number"] {
   font-size: 18px;
   text-align: left;
 }
+
+/* 角色頁標題列：左標題、右倒計時 */
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.role-header h2 {
+  margin-bottom: 0;
+  flex: 1;
+  text-align: left;
+}
+
+/* 倒計時圓角標籤 */
+.countdown {
+  flex-shrink: 0;
+  min-width: 64px;
+  padding: 6px 12px;
+  font-size: 24px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: #2b6cb0;
+  background-color: #ebf8ff;
+  border: 2px solid #bee3f8;
+  border-radius: 10px;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+/* 剩餘 10 秒內轉為警示色 */
+.countdown.warning {
+  color: #dd6b20;
+  background-color: #fffaf0;
+  border-color: #feebc8;
+}
+
+/* 時間到：00 閃爍 */
+.countdown.timeout {
+  color: #e53e3e;
+  background-color: #fff5f5;
+  border-color: #fed7d7;
+  animation: countdown-blink 0.6s step-start infinite;
+}
+
+@keyframes countdown-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

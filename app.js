@@ -511,16 +511,104 @@ const quizBank = [
     realHint: "表演藝術",
     fakeHints: ["宗教", "軍事"],
     desc: "韓國傳統宮廷舞蹈，源自新羅時期處容郎驅疫辟邪的傳說。舞者戴面具、穿彩衣，動作緩慢莊重，原為宮廷宴會與驅邪儀式所用，現為韓國重要無形文化財。"
+  },
+  // ===== 20261023 新增題目 =====
+  {
+    word: "甜甜圈效應",
+    realHint: "城市規劃",
+    fakeHints: ["飲食文化", "消費行為"],
+    desc: "指疫情後大城市市中心人口與商業活動空洞化、居民遷往郊區的現象，因城市核心像甜甜圈中間被掏空而得名。"
+  },
+  {
+    word: "綠洲假說",
+    realHint: "考古學",
+    fakeHints: ["地理學", "氣候學"],
+    desc: "考古學家龐佩利提出的農業起源理論，認為末次冰期後乾旱迫使人類聚集於綠洲，從而開始植物馴化；後續研究未能證實。"
+  },
+  {
+    word: "海德堡之吻",
+    realHint: "甜點工藝",
+    fakeHints: ["浪漫傳說", "地理景點"],
+    desc: "19世紀海德堡咖啡店老闆為幫助受監護人嚴管的學生情侶傳情，發明的巧克力餅乾，名為「學生之吻」。"
+  },
+  {
+    word: "泰勒展開式",
+    realHint: "高等數學",
+    fakeHints: ["服裝設計", "裁縫技術"],
+    desc: "微積分中將函數以多項式近似表示的方法，透過函數在某一點的導數值建構無窮級數，是分析學的核心工具之一。"
+  },
+  {
+    word: "吉芬商品",
+    realHint: "經濟學",
+    fakeHints: ["日常消費", "市場行銷"],
+    desc: "一種特殊低檔商品，價格上升時需求量反而增加，因收入效應大於替代效應，典型例子為19世紀愛爾蘭土豆。"
+  },
+  {
+    word: "金絲雀陷阱",
+    realHint: "資訊安全",
+    fakeHints: ["鳥類飼養", "礦業安全"],
+    desc: "資安領域的欺敵手法，向不同對象洩漏略微不同的版本資訊，藉此追蹤洩密來源；現代研究將其延伸為生成大量假文件以混淆駭客。"
+  },
+  {
+    word: "楚門錯覺",
+    realHint: "心理學",
+    fakeHints: ["影視娛樂", "社會運動"],
+    desc: "患者相信自己正活在實境秀中、被鏡頭監視，身邊所有人都是演員。由高德兄弟於2008年以電影《楚門的世界》命名。"
+  },
+  {
+    word: "齊加尼克效應",
+    realHint: "心理學",
+    fakeHints: ["工作效率", "記憶訓練"],
+    desc: "心理學家蔡格尼克發現，人們對未完成任務的記憶比已完成任務更深刻，源於未完成事項帶來的精神緊張持續存在。"
+  },
+  {
+    word: "敘事者謬誤",
+    realHint: "心理學",
+    fakeHints: ["文學批評", "歷史研究"],
+    desc: "由塔勒布推廣的概念，指人們傾向將零散事實強行串連成有因果關係的故事，以降低理解成本，卻往往扭曲了真相。"
+  },
+  {
+    word: "白象禮物",
+    realHint: "社會習俗",
+    fakeHints: ["動物保護", "宗教祭祀"],
+    desc: "源自暹羅傳說：國王將神聖白象贈與厭惡之人，受禮者因飼養成本高昂且不可轉讓而破產。後指昂貴卻無用的禮物或資產。"
+  },
+  {
+    word: "羅賓漢效應",
+    realHint: "經濟學",
+    fakeHints: ["民間傳說", "影視改編"],
+    desc: "經濟學術語，指財富從富人向窮人重新分配的現象，可透過累進稅制、社會福利等政策實現，名稱取自劫富濟貧的羅賓漢傳說。"
+  },
+  {
+    word: "湯姆森問題",
+    realHint: "數學物理",
+    fakeHints: ["新聞採訪", "出版編輯"],
+    desc: "1904年J.J.湯姆森提出：求N個電子在單位球面上相互排斥時的最低靜電勢能構型。與Smale問題相關，僅少數N有嚴格解。"
+  },
+  {
+    word: "科斯定理",
+    realHint: "經濟學",
+    fakeHints: ["法律條文", "數學定理"],
+    desc: "若交易成本為零且產權界定清晰，資源最終配置將不受產權初始分配影響，市場談判可達成效率結果。由斯蒂格勒歸納命名。"
   }
 ];
 
+// ============================================================
 // 遊戲狀態變數
+// ============================================================
 let playerCount = 4;
 let selectedDifficulty = 1;
 let currentTurnIndex = 0;
 let roles = []; // 'guesser', 'truth', 'liar'
 let currentTopic = null;
 let currentPublicHints = [];
+
+// ============================================================
+// 倒計時（角色頁 60 秒）
+// ============================================================
+const COUNTDOWN_SECONDS = 60;
+let countdownTimer = null;
+let countdownRemaining = COUNTDOWN_SECONDS;
 
 // DOM 元素
 const screens = {
@@ -532,6 +620,8 @@ const screens = {
   revealAll: document.getElementById("reveal-all-screen")
 };
 
+const countdownElem = document.getElementById("countdown");
+
 // 切換畫面
 function showScreen(screenName) {
   Object.values(screens).forEach(s => s.classList.remove("active"));
@@ -540,6 +630,46 @@ function showScreen(screenName) {
 
 // 顯示題庫題數
 document.getElementById("question-count").innerText = quizBank.length;
+
+// ============================================================
+// 倒計時控制
+// ============================================================
+function stopCountdown() {
+  if (countdownTimer !== null) {
+    clearInterval(countdownTimer);
+    countdownTimer = null;
+  }
+}
+
+function renderCountdown() {
+  countdownElem.classList.remove("warning", "timeout");
+
+  if (countdownRemaining <= 0) {
+    countdownElem.innerText = "00";
+    countdownElem.classList.add("timeout");
+    return;
+  }
+
+  countdownElem.innerText = countdownRemaining;
+  if (countdownRemaining <= 10) {
+    countdownElem.classList.add("warning");
+  }
+}
+
+function startCountdown() {
+  stopCountdown();
+  countdownRemaining = COUNTDOWN_SECONDS;
+  renderCountdown();
+
+  countdownTimer = setInterval(() => {
+    countdownRemaining--;
+    renderCountdown();
+
+    if (countdownRemaining <= 0) {
+      stopCountdown();
+    }
+  }, 1000);
+}
 
 // ============================================================
 // 抽題與渲染
@@ -628,6 +758,7 @@ document.getElementById("demo-btn").addEventListener("click", () => {
 
 // 返回設定頁按鈕事件
 document.getElementById("back-to-setup-btn").addEventListener("click", () => {
+  stopCountdown();
   showScreen("setup");
 });
 
@@ -690,11 +821,14 @@ document.getElementById("reveal-btn").addEventListener("click", () => {
     }
   }
 
+  startCountdown(); // 啟動 60 秒倒計時
   showScreen("role");
 });
 
 // 切換至下一個人或進入討論階段
 document.getElementById("next-player-btn").addEventListener("click", () => {
+  stopCountdown(); // 離開角色頁時停止倒計時
+
   currentTurnIndex++;
   if (currentTurnIndex < playerCount) {
     prepareTurnScreen();
@@ -720,5 +854,6 @@ document.getElementById("show-answer-btn").addEventListener("click", () => {
 
 // 重新開始
 document.getElementById("restart-btn").addEventListener("click", () => {
+  stopCountdown();
   showScreen("setup");
 });
