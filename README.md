@@ -1,53 +1,106 @@
-「9upper」（俗稱「九Upper」或「吹水王」）是一款非常受歡迎且考驗口才、心理戰與演技的廣東話派對桌遊，適合 4 至 8 人遊玩。
+# 9upper · 吹水王
 
-玩法核心在於：**一個人在說真話，其他人都在睜眼說瞎話（9up），而猜題者要找出誰才是講真話的人！**
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E2V52B1CCI)
 
----
+**English** · [繁體中文](README.zh-TW.md)
 
-### 遊戲配件與基本概念
+A bluffing party game for 3 to 10 people sharing one phone. One player is handed the real definition of an obscure word. Everyone else has to invent one, out loud, and sound like they mean it. The guesser has to pick out the single person telling the truth.
 
-* **題目牌（硬知識 / 冷知識）：** 上面印有極為冷門或不常見的詞彙/名詞（例如：某種罕見動物、冷門歷史事件、奇怪的科學專有名詞）。
-* **身份牌：** 決定玩家在本回合的角色（「真話者」或「9upper」）。
-* **答題者（猜題者）：** 輪流由一位玩家擔任，負責猜測誰說的是真話。
+<p>
+  <img src="docs/setup-en.png" width="230" alt="Setup screen with player count and difficulty">
+  <img src="docs/role-en.png" width="230" alt="A bluffer's secret role card">
+  <img src="docs/reveal-en.png" width="230" alt="Answer reveal screen">
+</p>
 
----
+## What you are playing
 
-### 遊戲流程步驟
+9upper (九upper, 吹水王) is a Hong Kong tabletop game about talking nonsense with a straight face. The box hands you a card of obscure trivia. One player reads the truth off it, everyone else makes something up, and the guesser tries to spot the liar.
 
-1. **抽角色與題目**
-* 每回合指定一名玩家擔任**答題者**（不參與說話/解釋）。
-* 其餘玩家各自抽取一張身份牌。其中只有**一名玩家是「真話者」**，其他人全部是「9upper」。
-* **真話者**會拿到或看到該冷知識詞彙的**真正定義與解釋**。
-* **9upper** 只會看到詞彙本身（甚至有時連詞彙都不知道，視乎版本玩法），**完全不知道正確定義**。
+This is that game running on a phone. There are no cards to print and nothing to install: open the page, type how many people are playing, and pass the phone round the table. 97 questions come built in, and they play differently each time because the bluffing does the work.
 
+## How a round works
 
-2. **集體「吹水」（9upper 時間）**
-* 給予所有人約 30 秒至 1 分鐘構思。
-* **真話者：** 需要將牌上的真實資料順暢地表達出來，目標是讓人相信自己說的是真話。
-* **9upper：** 必須憑空想像、一本正經地編造一個聽起來極為合理的假解釋，目標也是讓人相信自己。
+1. Set the player count and difficulty, then draw the word and deal the roles.
+2. Everyone reads the word and its category hints together. This is the one part of the round where nothing is hidden.
+3. Pass the phone. Each player taps to see only their own card, then hides it again for the next person.
+4. A bluffer gets a 60-second clock to read their hints and think of something. The truth-teller reads the real definition.
+5. The guesser picks someone to start. Going round the table, everyone explains what the word means.
+6. The guesser says who they believe, then you reveal the answer and find out who was lying.
 
+There are three roles, dealt fresh every round:
 
-3. **輪流發言與質詢**
-* 所有說話的玩家輪流向**答題者**解釋該詞彙的意思。
-* 答題者可以向任何玩家提出質疑或追問，測試誰在心虛或編造細節。
+| Role | What they get | What they do |
+| --- | --- | --- |
+| 🎯 Guesser | The word and the public hints | Says nothing, listens, picks the truth-teller |
+| 😇 Truth-teller | The real definition | Explains it well enough to be believed |
+| 🗣️ Bluffer | The word and the public hints | Invents a definition that sounds real |
 
+## Scoring at the table
 
-4. **投票與揭曉**
-* 答題者根據大家的表現，指出他認為**誰才是唯一說真話的人**。
+The app keeps no score, so the table decides. The usual rules from the box:
 
+- Guesser scores if they name the truth-teller.
+- Truth-teller scores if the guesser names them.
+- A bluffer scores if the guesser picks them instead.
 
+## Difficulty
 
----
+| Level | What the table sees | When to pick it |
+| --- | --- | --- |
+| 1 · One true hint | A single honest category | First game with a new group |
+| 2 · One true hint + two decoys | Three categories, shuffled, only one honest | The usual choice; the decoys give bluffers room |
+| 3 · No hints | Nothing at all | Everyone has played before and wants a mess |
 
-### 計分方式（常見規則）
+## Language
 
-* **答題者：** 如果成功猜中「真話者」，獲得分數。
-* **真話者：** 如果成功令答題者猜中自己，獲得分數。
-* **9upper（吹水者）：** 如果成功騙過答題者（令答題者誤以為自己講得才是真話），獲得分數。
+繁體中文 and English are both built in, and all 97 questions are translated, not just the buttons. Switch with the button at the top right; the choice is remembered in the browser.
 
----
+## Play it now
 
-### 遊戲樂趣與技巧
+No build step, no dependencies, nothing to install for a single device:
 
-* **真話像假話：** 由於題目都是極度冷門的冷知識，真話往往聽起來最離奇、最不像真的。
-* **假話要真誠：** 身為 9upper，講假話時要面不改色，加入大量細節（例如歷史年份、人物名字或科學原理）來增加說服力。
+```
+git clone https://github.com/incensestudio852/9upper.git
+cd 9upper
+open index.html
+```
+
+To play on phones, serve the same folder over your local network:
+
+```
+python3 -m http.server 8000
+```
+
+Then load `http://<your-computer-ip>:8000` on the phone. Everything runs in the browser, and it works offline apart from the tip panel at the end.
+
+## Questions
+
+The 97 entries are hand-written. Each one has a word, one true hint, two decoy hints and a real definition. Four rules keep the deck playable:
+
+1. The word should be obscure, and its literal meaning should point the wrong way.
+2. Hints should be broad categories, not giveaways.
+3. Every entry needs one true hint, two decoy hints and a definition a normal person can say out loud.
+4. Skip anything that reads as crude or gross. It kills the round.
+
+To add one, open `app.js` and add an entry to `quizBank`. Then open `quiz-en.js` and add the English word and definition under the Chinese word, plus any new category to `hintEn`. If a translation is missing the game falls back to Chinese instead of breaking.
+
+Pull requests with new questions are welcome, especially the ones that are hard to bluff about.
+
+## Files
+
+| File | What is in it |
+| --- | --- |
+| `index.html` | Six screens and the markup |
+| `app.js` | Game flow, role dealing, countdown, the 97-question deck |
+| `lang.js` | Interface strings for both languages |
+| `quiz-en.js` | English words, definitions and hint categories |
+| `style.css` | Styling |
+| `docs/` | Screenshots used in these READMEs |
+
+## Support
+
+The game is free and stays free. If your table had a good night, there is a coffee button on the last screen of every round, or use the badge above.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The game format comes from the 9upper tabletop game; the question deck here was written for this version, and every term is a real concept from history, science or folklore.

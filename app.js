@@ -626,10 +626,51 @@ const countdownElem = document.getElementById("countdown");
 function showScreen(screenName) {
   Object.values(screens).forEach(s => s.classList.remove("active"));
   screens[screenName].classList.add("active");
+
+  // 離開「揭曉答案」頁時，把 Ko-fi 打賞面板收起
+  if (screenName !== "revealAll") collapseKofiPanel();
 }
 
-// 顯示題庫題數
-document.getElementById("question-count").innerText = quizBank.length;
+// ============================================================
+// Ko-fi 打賞面板（只在最後的「揭曉答案」頁，按下按鈕才展開）
+// ============================================================
+const KOFI_HANDLE = "incensestudio";
+const KOFI_EMBED_URL = `https://ko-fi.com/${KOFI_HANDLE}/?hidefeed=true&widget=true&embed=true&preview=true`;
+
+const kofiToggleBtn = document.getElementById("kofi-toggle-btn");
+const kofiWrap = document.getElementById("kofi-embed-wrap");
+const kofiFrame = document.getElementById("kofiframe");
+
+function updateKofiButtonLabel() {
+  const isOpen = kofiToggleBtn.getAttribute("aria-expanded") === "true";
+  kofiToggleBtn.innerText = isOpen ? t("tip.collapse") : t("tip.btn");
+}
+
+// 第一次展開時才真正載入 iframe，其餘時間不預先下載 Ko-fi 頁面
+function kofiToggle() {
+  const willOpen = kofiWrap.hasAttribute("hidden");
+
+  if (willOpen && !kofiFrame.getAttribute("src")) {
+    kofiFrame.setAttribute("src", kofiFrame.dataset.src || KOFI_EMBED_URL);
+  }
+
+  kofiWrap.hidden = !willOpen;
+  kofiToggleBtn.setAttribute("aria-expanded", String(willOpen));
+  updateKofiButtonLabel();
+}
+
+function collapseKofiPanel() {
+  kofiWrap.hidden = true;
+  kofiToggleBtn.setAttribute("aria-expanded", "false");
+  updateKofiButtonLabel();
+}
+
+kofiToggleBtn.addEventListener("click", kofiToggle);
+
+// 顯示題庫題數（隨介面語言更新）
+function renderDeckCount() {
+  document.getElementById("deck-count-line").innerText = t("setup.deckCount", { n: quizBank.length });
+}
 
 // ============================================================
 // 倒計時控制
@@ -675,20 +716,30 @@ function startCountdown() {
 // 抽題與渲染
 // ============================================================
 
-function drawNewTopic() {
-  let newTopic;
-  do {
-    newTopic = quizBank[Math.floor(Math.random() * quizBank.length)];
-  } while (quizBank.length > 1 && currentTopic && newTopic === currentTopic);
-
-  currentTopic = newTopic;
-  renderPublicTopic();
+// 題目與提示轉成目前介面語言（中文題庫永遠是原文）
+function localizeHint(hint) {
+  if (typeof currentLang === "undefined" || currentLang !== "en") return hint;
+  if (typeof hintEn === "undefined") return hint;
+  return hintEn[hint] || hint;
 }
 
-function renderPublicTopic() {
-  const hintsContainer = document.getElementById("public-hints");
-  hintsContainer.innerHTML = "";
+function localizedTopic(topic) {
+  if (typeof currentLang === "undefined" || currentLang !== "en") return topic;
+  if (typeof termEn === "undefined") return topic;
 
+  const term = termEn[topic.word];
+  if (!term) return topic;
+
+  return {
+    word: term.word || topic.word,
+    realHint: topic.realHint,
+    fakeHints: topic.fakeHints,
+    desc: term.desc || topic.desc
+  };
+}
+
+// 依難度決定本局公開提示（只抽一次，換語言不會重新洗牌）
+function buildPublicHints() {
   if (selectedDifficulty === 1) {
     currentPublicHints = [currentTopic.realHint];
   } else if (selectedDifficulty === 2) {
@@ -697,19 +748,38 @@ function renderPublicTopic() {
   } else {
     currentPublicHints = [];
   }
+}
+
+function drawNewTopic() {
+  let newTopic;
+  do {
+    newTopic = quizBank[Math.floor(Math.random() * quizBank.length)];
+  } while (quizBank.length > 1 && currentTopic && newTopic === currentTopic);
+
+  currentTopic = newTopic;
+  buildPublicHints();
+  renderPublicTopic();
+}
+
+function renderPublicTopic() {
+  const hintsContainer = document.getElementById("public-hints");
+  hintsContainer.innerHTML = "";
 
   if (currentPublicHints.length > 0) {
     currentPublicHints.forEach(hint => {
       const span = document.createElement("span");
       span.className = "tag";
-      span.innerText = hint;
+      span.innerText = localizeHint(hint);
       hintsContainer.appendChild(span);
     });
   } else {
-    hintsContainer.innerHTML = `<span class="no-hint">（本局為難度三：無任何提示）</span>`;
+    const span = document.createElement("span");
+    span.className = "no-hint";
+    span.innerText = t("public.noHints");
+    hintsContainer.appendChild(span);
   }
 
-  document.getElementById("public-word").innerText = currentTopic.word;
+  document.getElementById("public-word").innerText = localizedTopic(currentTopic).word;
 }
 
 // 步驟 1 -> 步驟 2: 設定人數、難度並抽取題目與生成提示
@@ -721,7 +791,7 @@ document.getElementById("start-btn").addEventListener("click", () => {
   selectedDifficulty = parseInt(diffInput.value);
 
   if (isNaN(playerCount) || playerCount < 3 || playerCount > 10) {
-    alert("請輸入 3 至 10 之間的玩家人數！");
+    alert(t("alert.players"));
     return;
   }
 
@@ -774,53 +844,72 @@ document.getElementById("start-pass-btn").addEventListener("click", () => {
 });
 
 function prepareTurnScreen() {
-  document.getElementById("player-turn-title").innerText = `請交給 玩家 ${currentTurnIndex + 1}`;
+  document.getElementById("player-turn-title").innerText = t("pass.title", { n: currentTurnIndex + 1 });
   showScreen("pass");
 }
 
-// 揭曉目前玩家身分與詳細內容
-document.getElementById("reveal-btn").addEventListener("click", () => {
+// 顯示目前玩家的身分卡（語言切換時可重繪）
+function renderRoleCard() {
   const role = roles[currentTurnIndex];
+  const topic = localizedTopic(currentTopic);
+
   const roleNameElem = document.getElementById("role-name");
   const roleDesc = document.getElementById("role-desc");
-  const wordElem = document.getElementById("topic-word");
   const descContainer = document.getElementById("explanation-container");
   const descElem = document.getElementById("topic-desc");
   const liarHintsContainer = document.getElementById("liar-hints-container");
   const liarHintsElem = document.getElementById("liar-hints");
 
-  wordElem.innerText = currentTopic.word;
+  document.getElementById("topic-word").innerText = topic.word;
 
   if (role === "guesser") {
-    roleNameElem.innerText = "🎯 答題者";
-    roleDesc.innerText = "你本局不需要說話與編造，只需聆聽其他人的解釋並找出誰在講真話！";
+    roleNameElem.innerText = t("role.guesser");
+    roleDesc.innerText = t("role.guesserDesc");
     descContainer.style.display = "none";
     liarHintsContainer.style.display = "none";
   } else if (role === "truth") {
-    roleNameElem.innerText = "😇 老實人";
-    roleDesc.innerText = "請根據下方真實簡介向答題者解釋，努力贏得信任！";
+    roleNameElem.innerText = t("role.truth");
+    roleDesc.innerText = t("role.truthDesc");
     descContainer.style.display = "block";
-    descElem.innerText = currentTopic.desc;
+    descElem.innerText = topic.desc;
     liarHintsContainer.style.display = "none";
   } else { // liar
-    roleNameElem.innerText = "🗣️ 吹水王";
-    roleDesc.innerText = "你只知道題目詞彙與公開的提示！請發揮想像力，編造一個聽起來極為合理的假解釋！";
+    roleNameElem.innerText = t("role.liar");
+    roleDesc.innerText = t("role.liarDesc");
     descContainer.style.display = "none";
     liarHintsContainer.style.display = "block";
     liarHintsElem.innerHTML = "";
 
     if (selectedDifficulty === 3) {
-      liarHintsElem.innerHTML = `<span class="no-hint" style="font-size: 18px; font-weight: bold; color: #e53e3e;">祝你好運！</span>`;
+      const span = document.createElement("span");
+      span.className = "no-hint";
+      span.setAttribute("style", "font-size: 18px; font-weight: bold; color: #e53e3e;");
+      span.innerText = t("role.goodLuck");
+      liarHintsElem.appendChild(span);
     } else {
       currentPublicHints.forEach(hint => {
         const span = document.createElement("span");
         span.className = "tag";
-        span.innerText = hint;
+        span.innerText = localizeHint(hint);
         liarHintsElem.appendChild(span);
       });
     }
   }
+}
 
+// 揭曉答案頁
+function renderReveal() {
+  const topic = localizedTopic(currentTopic);
+
+  document.getElementById("final-word").innerText = topic.word;
+  document.getElementById("final-desc").innerText = topic.desc;
+  document.getElementById("final-guesser").innerText = t("reveal.player", { n: roles.indexOf("guesser") + 1 });
+  document.getElementById("final-truth-teller").innerText = t("reveal.player", { n: roles.indexOf("truth") + 1 });
+}
+
+// 揭曉目前玩家身分與詳細內容
+document.getElementById("reveal-btn").addEventListener("click", () => {
+  renderRoleCard();
   startCountdown(); // 啟動 60 秒倒計時
   showScreen("role");
 });
@@ -833,22 +922,14 @@ document.getElementById("next-player-btn").addEventListener("click", () => {
   if (currentTurnIndex < playerCount) {
     prepareTurnScreen();
   } else {
-    document.getElementById("discussion-word").innerText = currentTopic.word;
+    document.getElementById("discussion-word").innerText = localizedTopic(currentTopic).word;
     showScreen("discussion");
   }
 });
 
 // 最終揭曉答案
 document.getElementById("show-answer-btn").addEventListener("click", () => {
-  document.getElementById("final-word").innerText = currentTopic.word;
-  document.getElementById("final-desc").innerText = currentTopic.desc;
-
-  const guesserIndex = roles.indexOf("guesser") + 1;
-  const truthIndex = roles.indexOf("truth") + 1;
-
-  document.getElementById("final-guesser").innerText = `玩家 ${guesserIndex}`;
-  document.getElementById("final-truth-teller").innerText = `玩家 ${truthIndex}`;
-
+  renderReveal();
   showScreen("revealAll");
 });
 
@@ -857,3 +938,37 @@ document.getElementById("restart-btn").addEventListener("click", () => {
   stopCountdown();
   showScreen("setup");
 });
+
+// ============================================================
+// 語言切換重繪：靜態文字由 lang.js 的 applyLang() 處理，
+// 這裡補上畫面上由 JS 生成的內容，切換語言不會留下混雜文字。
+// ============================================================
+function refreshScreenText() {
+  applyLang();
+  renderDeckCount();
+  updateKofiButtonLabel();
+
+  const activeCard = document.querySelector(".card.active");
+  if (!activeCard || !currentTopic) return;
+
+  switch (activeCard.id) {
+    case "public-topic-screen":
+      renderPublicTopic();
+      break;
+    case "pass-screen":
+      document.getElementById("player-turn-title").innerText = t("pass.title", { n: currentTurnIndex + 1 });
+      break;
+    case "role-screen":
+      renderRoleCard();
+      break;
+    case "discussion-screen":
+      document.getElementById("discussion-word").innerText = localizedTopic(currentTopic).word;
+      break;
+    case "reveal-all-screen":
+      renderReveal();
+      break;
+  }
+}
+
+// 首次載入：套用儲存的語言
+refreshScreenText();
